@@ -7,11 +7,14 @@ services:
       dockerfile: Dockerfile
     container_name: fastapi_app
     environment:
+      - PYTHONPATH=/app
       - DATABASE_URL=${DATABASE_URL}
     ports:
       - "8000:8000"
     depends_on:
       - db
+    volumes:
+      - ./backend/app:/app
 
   bot:
     build:
