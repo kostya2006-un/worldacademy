@@ -16,17 +16,6 @@ services:
     volumes:
       - ./backend/app:/app
 
-  bot:
-    build:
-      context: ./telegram_bot
-      dockerfile: Dockerfile
-    container_name: telegram_bot
-    environment:
-      - BOT_TOKEN=${BOT_TOKEN}
-      - BACKEND_URL=${BACKEND_URL}
-    depends_on:
-      - backend
-
   db:
     image: postgres:15
     container_name: postgres_db

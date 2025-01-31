@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel
 
 
@@ -29,3 +29,7 @@ class UserResponse(UserBase):
 
     class Config:
         orm_mode = True
+
+
+class UserList(BaseModel):
+    id_user: int

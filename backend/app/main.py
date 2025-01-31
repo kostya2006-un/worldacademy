@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from dp import init_db
 from api import user_router
 
+
 app = FastAPI()
 app.include_router(user_router)
 

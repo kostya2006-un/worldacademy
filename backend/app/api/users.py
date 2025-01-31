@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from schemas import UserBase, UserResponse, UserUpdate
+from schemas import UserBase, UserResponse, UserUpdate, UserList
 from repository import UserRepository
 from fastapi import Depends
 from fastapi import HTTPException
@@ -16,8 +16,8 @@ async def add_user(user: UserBase = Depends()):
     return user_id
 
 
-@router.get("")
-async def get_users() -> list[UserResponse]:
+@router.get("", response_model=list[UserList])
+async def get_users():
     users = await UserRepository.all_users()
     return users
 

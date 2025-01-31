@@ -1,6 +1,6 @@
 from sqlalchemy import select, delete, update
 from dp import async_session
-from schemas import UserBase, UserResponse, UserUpdate
+from schemas import UserBase, UserResponse, UserUpdate, UserList
 from models import User
 
 
@@ -52,17 +52,12 @@ class UserRepository:
             return result.rowcount > 0
 
     @classmethod
-    async def all_users(cls) -> list[UserResponse]:
+    async def all_users(cls) -> list[UserList]:
         async with async_session() as session:
             query = select(User)
             result = await session.execute(query)
             user_models = result.scalars().all()
 
-            user_dicts = [user.__dict__ for user in user_models]
-
-            for user_dict in user_dicts:
-                user_dict.pop("_sa_instance_state", None)
-
-            user_schemas = [UserResponse.model_validate(user_dict) for user_dict in user_dicts]
+            user_schemas = [UserList.model_validate(user.__dict__) for user in user_models]
             return user_schemas
 
