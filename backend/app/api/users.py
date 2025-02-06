@@ -11,9 +11,12 @@ router = APIRouter(
 
 
 @router.post("")
-async def add_user(user: UserBase = Depends()):
-    user_id = await UserRepository.add_user(user)
-    return user_id
+async def add_user(body: UserBase):
+    try:
+        user_id = await UserRepository.add_user(body)
+        return {"id_user": user_id}
+    except Exception as e:
+        return {"error": "Failed to create user"}
 
 
 @router.get("", response_model=list[UserList])
