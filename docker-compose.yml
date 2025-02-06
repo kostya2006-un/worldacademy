@@ -30,3 +30,7 @@ services:
 
 volumes:
   postgres_data:
+
+networks:
+  server_worldacademy-network:
+    driver: bridge

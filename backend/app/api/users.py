@@ -22,7 +22,7 @@ async def get_users():
     return users
 
 
-@router.get("/{user_id}")
+@router.get("/{user_id}/")
 async def get_user(user_id: int) -> UserResponse:
     user = await UserRepository.get_user(user_id)
     if user is None:
@@ -30,13 +30,13 @@ async def get_user(user_id: int) -> UserResponse:
     return user
 
 
-@router.delete("/{user_id}")
+@router.delete("/{user_id}/")
 async def delete_user(user_id: int):
     res = await UserRepository.delete_user(user_id)
     return res
 
 
-@router.put("/{user_id}")
+@router.put("/{user_id}/")
 async def update_user(user_id: int, user: UserUpdate = Depends()):
     res = await UserRepository.update_user(user_id, user)
     if not res:
