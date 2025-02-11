@@ -6,7 +6,7 @@ from models import User
 
 class UserRepository:
     @classmethod
-    async def add_user(cls, user_data: UserBase)-> int:
+    async def add_user(cls, user_data: UserUpdate)-> int:
         async with async_session() as session:
             user_data = user_data.model_dump()
 
@@ -40,7 +40,6 @@ class UserRepository:
     async def update_user(cls, user_id: int, user_data: UserUpdate) -> bool:
         async with async_session() as session:
             user_data = user_data.model_dump()
-
             query = (
                 update(User)
                 .where(User.id_user == user_id)

@@ -39,9 +39,10 @@ async def delete_user(user_id: int):
     return res
 
 
-@router.put("/{user_id}/")
-async def update_user(user_id: int, user: UserUpdate = Depends()):
+@router.put("/{user_id}/", response_model=UserUpdate)
+async def update_user(user_id: int, user: UserUpdate):
     res = await UserRepository.update_user(user_id, user)
     if not res:
         raise HTTPException(status_code=404, detail="User not found or not updated")
-    return {"status": "success", "message": "User updated successfully"}
+    updated_user = await UserRepository.get_user(user_id)  # Получаем обновленного юзера
+    return updated_user
