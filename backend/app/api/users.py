@@ -1,7 +1,6 @@
 from fastapi import APIRouter
 from schemas import UserBase, UserResponse, UserUpdate, UserList
 from repository import UserRepository
-from fastapi import Depends
 from fastapi import HTTPException
 
 router = APIRouter(
