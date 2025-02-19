@@ -20,6 +20,7 @@ class User(Base):
     portfolios = relationship("Portfolio", back_populates="user")
     trades = relationship("Trade", back_populates="user")
 
+
 class Assets(Base):
     __tablename__ = "assets"
     ticker: Mapped[str] = mapped_column(String(10), primary_key=True, unique=True)
@@ -29,6 +30,7 @@ class Assets(Base):
 
     portfolios = relationship("Portfolio", back_populates="asset")
     trades = relationship("Trade", back_populates="asset")
+
 
 class Portfolio(Base):
     __tablename__ = "portfolios"
