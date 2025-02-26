@@ -10,7 +10,7 @@ CRYPTO_ASSETS = {
     "ETH": "Ethereum",
     "BNB": "Binance Coin",
     "SOL": "Solana",
-    "XRP": "XRP"
+    "XRP": "XRP",
 }
 
 
@@ -25,17 +25,22 @@ async def update_write_price_assets():
                 symbol = f"{ticker}USDT"
                 try:
                     # Получаем цену с Binance
-                    response = await client.get(f"https://api.binance.us/api/v3/ticker/price?symbol={symbol}")
+                    response = await client.get(
+                        f"https://api.binance.us/api/v3/ticker/price?symbol={symbol}"
+                    )
                     data = response.json()
                     new_price = round(float(data["price"]), 2)
 
                     if ticker in assets:
-                        # Если актив уже есть — обновляем цену
                         asset = assets[ticker]
                         asset.price = new_price
                     else:
-                        # Если актива нет в базе — создаем новый
-                        asset = Assets(ticker=ticker, name=name, asset_type="crypto", price=new_price)
+                        asset = Assets(
+                            ticker=ticker,
+                            name=name,
+                            asset_type="crypto",
+                            price=new_price,
+                        )
                         session.add(asset)
 
                 except Exception as e:
@@ -43,10 +48,13 @@ async def update_write_price_assets():
 
             await session.commit()
 
+
 scheduler = AsyncIOScheduler()
 
 
 def start_scheduler():
     """Запускаем планировщик для обновления цен активов и создания отсутствующих."""
-    scheduler.add_job(update_write_price_assets, "interval", seconds=120)  # Обновляем каждые 2 минуты
+    scheduler.add_job(
+        update_write_price_assets, "interval", seconds=120
+    )  # Обновляем каждые 2 минуты
     scheduler.start()

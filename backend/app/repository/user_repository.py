@@ -6,7 +6,7 @@ from models import User
 
 class UserRepository:
     @classmethod
-    async def add_user(cls, user_data: UserUpdate)-> int:
+    async def add_user(cls, user_data: UserUpdate) -> int:
         async with async_session() as session:
             user_data = user_data.model_dump()
 
@@ -57,5 +57,7 @@ class UserRepository:
             result = await session.execute(query)
             user_models = result.scalars().all()
 
-            user_schemas = [UserList.model_validate(user.__dict__) for user in user_models]
+            user_schemas = [
+                UserList.model_validate(user.__dict__) for user in user_models
+            ]
             return user_schemas

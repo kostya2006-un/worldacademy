@@ -5,7 +5,7 @@ from pydantic import BaseModel
 class TradeRequest(BaseModel):
     user_id: int
     ticker: str
-    trade_type: str  # "buy" or "sell"
+    trade_type: str
     quantity: float
 
 

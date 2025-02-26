@@ -3,10 +3,7 @@ from schemas import AssetSchema
 from repository import AssetsRepository
 from fastapi import HTTPException
 
-router = APIRouter(
-    prefix="/assets",
-    tags=["assets"]
-)
+router = APIRouter(prefix="/assets", tags=["assets"])
 
 
 @router.post("/")
