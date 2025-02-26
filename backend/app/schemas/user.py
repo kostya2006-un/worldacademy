@@ -11,6 +11,7 @@ class UserUpdate(BaseModel):
     is_active: Optional[bool] = True
     is_premium: Optional[bool] = False
     language_code: Optional[str]
+    balance: float | None = None
 
 
 class UserBase(BaseModel):
@@ -22,10 +23,12 @@ class UserBase(BaseModel):
     is_active: Optional[bool] = True
     is_premium: Optional[bool] = False
     language_code: Optional[str]
+    balance: float
 
 
 class UserResponse(UserBase):
     created_at: datetime
+    balance: float
 
     class Config:
         orm_mode = True

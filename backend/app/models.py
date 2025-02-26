@@ -16,7 +16,7 @@ class User(Base):
     is_premium: Mapped[bool | None] = mapped_column(Boolean, default=False, nullable=True)
     language_code: Mapped[str | None] = mapped_column(String(10), nullable=True)
     created_at: Mapped[DateTime] = mapped_column(DateTime, default=func.now(), nullable=False)
-
+    balance: Mapped[float] = mapped_column(Numeric(10, 2), default=100000.00, nullable=False)
     portfolios = relationship("Portfolio", back_populates="user")
     trades = relationship("Trade", back_populates="user")
 
