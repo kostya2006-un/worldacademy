@@ -1,6 +1,7 @@
 from dp import async_session
 from models import Portfolio
 from sqlalchemy.future import select
+from sqlalchemy.orm import joinedload
 
 
 class PortfolioRepository:
@@ -8,9 +9,20 @@ class PortfolioRepository:
     async def get_portfolio(user_id: int):
         async with async_session() as session:
             result = await session.execute(
-                select(Portfolio).where(Portfolio.id_user == user_id)
+                select(Portfolio)
+                .options(joinedload(Portfolio.asset))
+                .where(Portfolio.id_user == user_id)
             )
-            return result.scalars().all()
+            portfolios = result.scalars().all()
+
+            return [
+                {
+                    "ticker": p.ticker,
+                    "quantity": float(p.quantity),
+                    "total_value": round(float(p.quantity) * float(p.asset.price), 2),
+                }
+                for p in portfolios
+            ]
 
     @staticmethod
     async def create_update_portfolio(ticker: str, quantity: float, user_id: int):

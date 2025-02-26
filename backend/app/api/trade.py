@@ -85,3 +85,11 @@ async def get_portfolio(user_id: int):
 async def get_trade_history(user_id: int):
     trades = await TradeRepository.get_trade_history(user_id)
     return trades
+
+
+@router.get("/portfolio_value/{user_id}")
+async def get_portfolio_value(user_id: int):
+    portfolio = await PortfolioRepository.get_portfolio(user_id)
+    total_value = round(sum(asset["total_value"] for asset in portfolio), 2)
+
+    return {"user_id": user_id, "total_portfolio_value": total_value}
