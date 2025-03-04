@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from dp import get_session
 from repository import (
@@ -11,6 +12,7 @@ from schemas import TradeRequest, PortfolioResponse, TradeResponse
 from decimal import Decimal
 from models import User
 
+from models import Portfolio
 
 router = APIRouter(prefix="/finance", tags=["finance"])
 
@@ -42,25 +44,39 @@ async def execute_trade(
 
     elif trade_data.trade_type == "sell":
 
-        portfolio = await PortfolioRepository.get_portfolio(trade_data.user_id)
+        # Получаем объект Portfolio напрямую из базы
 
-        portfolio_asset = next(
-            (p for p in portfolio if p.ticker == trade_data.ticker), None
+        result = await session.execute(
+            select(Portfolio)
+            .where(Portfolio.id_user == trade_data.user_id)
+            .where(Portfolio.ticker == trade_data.ticker)
         )
 
+        portfolio_asset = result.scalar_one_or_none()
+
+        # Проверяем наличие и количество
+
         if not portfolio_asset or portfolio_asset.quantity < quantity:
+
             raise HTTPException(status_code=400, detail="Not enough assets to sell")
+
+        # Обновляем количество и баланс
 
         portfolio_asset.quantity -= quantity
 
         user.balance += total_cost
 
-        session.add(portfolio_asset)
-
-        session.add(user)
+        # Удаляем запись, если количество стало 0
 
         if portfolio_asset.quantity == 0:
+
             await session.delete(portfolio_asset)
+
+            session.add(user)  # Обновляем только пользователя
+
+        else:
+
+            session.add_all([portfolio_asset, user])
 
     await session.commit()
 
@@ -85,3 +101,11 @@ async def get_portfolio(user_id: int):
 async def get_trade_history(user_id: int):
     trades = await TradeRepository.get_trade_history(user_id)
     return trades
+
+
+@router.get("/portfolio_value/{user_id}")
+async def get_portfolio_value(user_id: int):
+    portfolio = await PortfolioRepository.get_portfolio(user_id)
+    total_value = round(sum(asset["total_value"] for asset in portfolio), 2)
+
+    return {"user_id": user_id, "total_portfolio_value": total_value}
