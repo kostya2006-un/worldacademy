@@ -8,6 +8,7 @@ from sqlalchemy import (
     Integer,
     ForeignKey,
     Numeric,
+    Text,
 )
 from sqlalchemy.orm import Mapped, mapped_column, declarative_base, relationship
 
@@ -87,3 +88,97 @@ class Trade(Base):
 
     user = relationship("User", back_populates="trades")
     asset = relationship("Assets", back_populates="trades")
+
+
+class Topic(Base):
+    __tablename__ = "topics"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    title: Mapped[str] = mapped_column(String, nullable=False)
+
+    lessons = relationship("Lesson", back_populates="topic")
+
+
+class Lesson(Base):
+    __tablename__ = "lessons"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    topic_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("topics.id", ondelete="CASCADE")
+    )
+    title: Mapped[str] = mapped_column(String, nullable=False)
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+
+    topic = relationship("Topic", back_populates="lessons")
+    questions = relationship("Question", back_populates="lesson")
+
+
+class Question(Base):
+    __tablename__ = "questions"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    lesson_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("lessons.id", ondelete="CASCADE")
+    )
+    question_text: Mapped[str] = mapped_column(String, nullable=False)
+
+    lesson = relationship("Lesson", back_populates="questions")
+    answers = relationship("Answer", back_populates="question")
+
+
+class Answer(Base):
+    __tablename__ = "answers"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    question_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("questions.id", ondelete="CASCADE")
+    )
+    answer_text: Mapped[str] = mapped_column(String, nullable=False)
+    is_correct: Mapped[bool] = mapped_column(Boolean, default=False)
+
+    question = relationship("Question", back_populates="answers")
+
+
+class UserCompletedLesson(Base):
+    __tablename__ = "user_completed_lessons"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    lesson_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("lessons.id", ondelete="CASCADE")
+    )
+    completed_at: Mapped[DateTime] = mapped_column(
+        DateTime, default=func.now(), nullable=False
+    )
+
+    lesson = relationship("Lesson")
+
+
+class UserCompletedTopic(Base):
+    __tablename__ = "user_completed_topics"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    topic_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("topics.id", ondelete="CASCADE")
+    )
+    completed_at: Mapped[DateTime] = mapped_column(
+        DateTime, default=func.now(), nullable=False
+    )
+
+    topic = relationship("Topic")
+
+
+class UserCompletedQuestion(Base):
+    __tablename__ = "user_completed_questions"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    question_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("questions.id", ondelete="CASCADE")
+    )
+    completed_at: Mapped[DateTime] = mapped_column(
+        DateTime, default=func.now(), nullable=False
+    )
+
+    question = relationship("Question")
