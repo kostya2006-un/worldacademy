@@ -279,3 +279,38 @@ class UserProgressRepository:
                 )
             )
             return result.scalars().all()
+
+    @staticmethod
+    async def remove_completed_lesson(user_id: int, lesson_id: int):
+        async with async_session() as session:
+            query = delete(UserCompletedLesson).where(
+                UserCompletedLesson.user_id == user_id,
+                UserCompletedLesson.lesson_id == lesson_id,
+            )
+            result = await session.execute(query)
+            await session.commit()
+            return result.rowcount > 0
+
+    # ✅ Удалить пройденную тему
+    @staticmethod
+    async def remove_completed_topic(user_id: int, topic_id: int):
+        async with async_session() as session:
+            query = delete(UserCompletedTopic).where(
+                UserCompletedTopic.user_id == user_id,
+                UserCompletedTopic.topic_id == topic_id,
+            )
+            result = await session.execute(query)
+            await session.commit()
+            return result.rowcount > 0
+
+    # ✅ Удалить пройденный вопрос
+    @staticmethod
+    async def remove_completed_question(user_id: int, question_id: int):
+        async with async_session() as session:
+            query = delete(UserCompletedQuestion).where(
+                UserCompletedQuestion.user_id == user_id,
+                UserCompletedQuestion.question_id == question_id,
+            )
+            result = await session.execute(query)
+            await session.commit()
+            return result.rowcount > 0

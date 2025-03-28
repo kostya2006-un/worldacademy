@@ -209,3 +209,29 @@ async def complete_question(body: UserCompletedQuestionSchema):
 @progress_router.get("/questions/", response_model=list[UserCompletedQuestionSchema])
 async def get_completed_questions(user_id: int):
     return await UserProgressRepository.get_completed_questions(user_id)
+
+
+@progress_router.delete("/lessons/")
+async def remove_completed_lesson(user_id: int, lesson_id: int):
+    success = await UserProgressRepository.remove_completed_lesson(user_id, lesson_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Completed lesson not found")
+    return {"message": "Lesson completion removed"}
+
+
+@progress_router.delete("/topics/")
+async def remove_completed_topic(user_id: int, topic_id: int):
+    success = await UserProgressRepository.remove_completed_topic(user_id, topic_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Completed topic not found")
+    return {"message": "Topic completion removed"}
+
+
+@progress_router.delete("/questions/")
+async def remove_completed_question(user_id: int, question_id: int):
+    success = await UserProgressRepository.remove_completed_question(
+        user_id, question_id
+    )
+    if not success:
+        raise HTTPException(status_code=404, detail="Completed question not found")
+    return {"message": "Question completion removed"}
